@@ -1,15 +1,70 @@
-from lxml import html
-from lxml.html import HtmlElement
+import json
+from typing import Dict, List, Union
+
+from furl import furl
+
+from .http import text
+from .html import extract, parse_html
+from .utils import parse_price
 
 
-def parse_html(text: str) -> HtmlElement:
-    return html.fromstring(text)
+def search(query: str) -> List[Dict[str, str]]:
+    remote = furl("https://www.investing.com/search/")
+    remote.args["q"] = query
+    
+    doc = parse_html(text(remote.url))
+    
+    results = []
 
+    items = extract(doc, "//div[@class='searchSectionMain']//a[contains(@class,'results-quote-item')]")
+    for item in items:
+        url = extract(item, "./@href", 0)
+        name = extract(item, ".//*[@class='third']/text()", 0)
+        symbol = extract(item, ".//*[@class='second']/text()", 0)
+        exchange = extract(item, ".//*[@class='fourth']/text()", 0)
 
-def extract(elem: HtmlElement, xpath: str, index: int=None):
-    results = elem.xpath(xpath)
+        if url is not None:
+            if not url.startswith("http"):
+                url = remote.origin + url
+            url += '-company-profile'
 
-    if index is not None:
-        if len(results) > 0: return results[index]
-        return
+            results.append({
+                "url": url,
+                "name": name,
+                "symbol": symbol,
+                "exchange": exchange,
+            })
+
     return results
+
+
+def detail(url: str) -> Dict[str, Union[str, float]]:
+    '''
+    TODO: Handle 404
+    '''
+    doc = parse_html(text(url))
+
+    price = extract(doc, "//*[@id='last_last']/text()", 0)
+    if price is not None:
+        price = parse_price(price)
+
+    data = {
+        'url': url,
+        'price': price,
+        'industry': extract(doc, "//div[text()='Industry']/a/text()", 0),
+        'sector': extract(doc, "//div[text()='Sector']/a/text()", 0),
+        'market': extract(doc, "//div[contains(@class,'general-info')]//div[span[contains(text(),'Market')]]/span[@class='elp']/@title", 0),
+    }
+    script = extract(doc, "//script[contains(text(),'tickersymbol')]/text()", 0)
+    if script:
+        try:
+            json_data = json.loads(script)
+            data.update({
+                'name': json_data.get('legalName'),
+                'symbol': json_data.get('tickersymbol'),
+                'country': json_data.get('Address',{}).get("addresscountry",{}).get("name"),
+            })
+        except ValueError:
+            pass
+
+    return data

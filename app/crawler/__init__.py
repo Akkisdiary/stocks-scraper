@@ -1,1 +1,1 @@
-from .actions import detail, search
+from .scraper import detail, search
