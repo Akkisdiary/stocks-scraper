@@ -29,7 +29,7 @@ def random_accept() -> str:
     return random.choice(accs)
 
 
-def headers(defaults: Dict[str, str] = None) -> Dict[str, str]:
+def random_headers(defaults: Dict[str, str] = None) -> Dict[str, str]:
     h = {
         'accept': random_accept(),
         'user-agent': random_user_agent(),
@@ -45,6 +45,18 @@ def text(url: str) -> str:
     '''
     returns the response text for given url
     '''
-    res = requests.get(url, headers=headers())
+    res = requests.get(url, headers=random_headers())
     res.raise_for_status()
     return res.text
+
+
+def json(url: str, method: str, **kwargs):
+    '''
+    returns the response json for given url
+    '''
+    headers = kwargs.pop('headers', {})
+
+    request = getattr(requests, method.lower())
+    response = request(url, headers=random_headers(headers), **kwargs)
+
+    return response.json()

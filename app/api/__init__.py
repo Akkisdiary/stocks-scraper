@@ -7,6 +7,6 @@ def create_api():
     api = Api()
     
     api.add_resource(SearchResource, "/search")
-    api.add_resource(DetailResource, "/detail")
+    # api.add_resource(DetailResource, "/detail")
 
     return api

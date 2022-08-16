@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 
-from ... import crawler
+from ...crawler import tradingview
 from .utils import response
 
 
@@ -13,6 +13,6 @@ class SearchResource(Resource):
             status_code = 400
             return response({"message": "search query not provided"}, status_code)
 
-        results = crawler.search(query)
+        results = tradingview.search(query)
         return response({"results": results}, 200)
 
