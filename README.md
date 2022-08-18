@@ -1,4 +1,4 @@
-# Stocks Scraper
+# Stocks Scraper Api
 
 ## Introduction
 
