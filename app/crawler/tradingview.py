@@ -83,3 +83,64 @@ def search(query: str) -> List[Dict[str, str]]:
 
 def detail(url: str) -> Dict[str, Union[str, float]]:
     raise NotImplementedError('TradingView detail extraction not implemented')
+
+
+def currency_payload(code: str):
+    return {
+        "filter": [
+            {"left": "name","operation": "nempty"},
+            {"left": "name,description","operation": "match","right": code}
+        ],
+        "options": {"lang": "en"},
+        "markets": ["forex"],
+        "symbols": {"query": {"types": ["forex"]},"tickers": []},
+        "columns": [
+            "name",
+            "close",
+            "description",
+        ],
+        "sort": {"sortBy": "name","sortOrder": "asc"},
+        "range": [0,300]
+    }
+
+
+def currency(code: str):
+    payload = currency_payload(code)
+    headers = {
+        'accept': 'text/plain, */*; q=0.01',
+        'accept-language': 'en',
+        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'origin': 'https://www.tradingview.com',
+        'referer': 'https://www.tradingview.com/',
+    }
+    data = http.json(remote, "POST", data=json.dumps(payload), headers=headers)
+    
+    results = []
+
+    items = data.get("data")
+
+    for item in items:
+        id = item.get('s')
+        name, close, description = item.get('d')
+
+        from_code = name[:3]
+        to_code = name[-3:]
+
+        desc = description.split("/")
+        from_name = desc[0].strip()
+        to_name = desc[-1].strip()
+
+        results.append({
+            "id": id,
+            "from": {
+                "name": from_name,
+                "code": from_code,
+            },
+            "to": {
+                "name": to_name,
+                "code": to_code,
+            },
+            "rate": close
+        })
+
+    return results

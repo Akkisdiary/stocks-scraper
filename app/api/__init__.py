@@ -1,12 +1,12 @@
 from flask_restful import Api
 
-from .resources import DetailResource, SearchResource
+from .resources import CurrencyResource, SearchResource
 
 
 def create_api():
     api = Api()
     
     api.add_resource(SearchResource, "/search")
-    # api.add_resource(DetailResource, "/detail")
+    api.add_resource(CurrencyResource, "/currency/<string:code>")
 
     return api
