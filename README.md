@@ -5,11 +5,11 @@
 Flask based scraper with API endpoints for stocks search.
 Data is scraped from [TradingView](https://www.tradingview.com/).
 
-Used as a backend for [Portfolio By Sector](https://github.com/Akkisdiary/portfolio-by-sector)
+Used as a backend for [Portfolio Allocation](https://github.com/Akkisdiary/portfolio-allocation)
 
 ## Live Demo
 
-You can access the live demo [here](http://portfolio-by-sector.herokuapp.com/).
+You can access the live demo [here](https://portfolio-allocation.netlify.app/).
 
 ## Run Locally
 
