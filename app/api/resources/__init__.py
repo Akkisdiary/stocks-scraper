@@ -1,3 +1,3 @@
-from .DetailResource import DetailResource
-from .SearchResource import SearchResource
-from .CurrencyResource import CurrencyResource
+from .CurrencyResource import CurrencyResource  # noqa
+from .DetailResource import DetailResource  # noqa
+from .SearchResource import SearchRandomResource, SearchResource  # noqa
