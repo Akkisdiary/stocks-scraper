@@ -1,20 +1,16 @@
-FROM python:3-alpine
-
-RUN apk add --virtual .build-dependencies \ 
-            --no-cache \
-            python3-dev \
-            build-base \
-            linux-headers \
-            pcre-dev
-
-RUN apk add --no-cache pcre
+FROM python:3.9-slim-buster
 
 WORKDIR /app
-COPY . /app
+
+RUN apt-get update && \
+    apt-get install -y build-essential python-dev
+
+COPY ./requirements.txt /app
 
 RUN pip install -r /app/requirements.txt
 
-RUN apk del .build-dependencies && rm -rf /var/cache/apk/*
+COPY . /app
 
 EXPOSE 5000
+
 CMD ["uwsgi", "--ini", "/app/wsgi.ini"]
