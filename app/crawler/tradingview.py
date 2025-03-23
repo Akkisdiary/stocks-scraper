@@ -5,65 +5,7 @@ from . import http
 from .utils import parse_price
 
 remote = "https://scanner.tradingview.com/global/scan"
-DEFAULT_MARKETS = [
-    "america",
-    "uk",
-    "india",
-    "spain",
-    "russia",
-    "australia",
-    "brazil",
-    "japan",
-    "newzealand",
-    "turkey",
-    "switzerland",
-    "hongkong",
-    "taiwan",
-    "netherlands",
-    "belgium",
-    "portugal",
-    "france",
-    "mexico",
-    "canada",
-    "colombia",
-    "uae",
-    "nigeria",
-    "singapore",
-    "germany",
-    "peru",
-    "poland",
-    "italy",
-    "argentina",
-    "israel",
-    "egypt",
-    "serbia",
-    "chile",
-    "china",
-    "malaysia",
-    "ksa",
-    "bahrain",
-    "qatar",
-    "indonesia",
-    "finland",
-    "iceland",
-    "denmark",
-    "romania",
-    "hungary",
-    "sweden",
-    "slovakia",
-    "lithuania",
-    "luxembourg",
-    "estonia",
-    "latvia",
-    "vietnam",
-    "rsa",
-    "thailand",
-    "korea",
-    "norway",
-    "philippines",
-    "greece",
-    "venezuela",
-]
+DEFAULT_MARKETS = ["america", "india"]
 
 
 def search_payload(
@@ -143,11 +85,11 @@ def currency_payload(code: str):
     return {
         "filter": [
             {"left": "name", "operation": "nempty"},
-            {"left": "name,description", "operation": "match", "right": code},
+            {"left": "name", "operation": "match", "right": code},
         ],
         "options": {"lang": "en"},
         "markets": ["forex"],
-        "symbols": {"query": {"types": ["forex"]}, "tickers": []},
+        "symbols": {"query": {"types": ["forex"]}},
         "columns": [
             "name",
             "close",
@@ -202,8 +144,8 @@ def currency(code: str):
     return results
 
 
-def random_stocks(limit: int = 10):
-    payload = search_payload("", ["india"])
+def random_stocks(limit: int = 10, market: str = "india"):
+    payload = search_payload("", [market], limit)
     headers = {
         "accept": "text/plain, */*; q=0.01",
         "accept-language": "en",
