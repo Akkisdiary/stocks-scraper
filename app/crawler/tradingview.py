@@ -85,7 +85,7 @@ def currency_payload(code: str):
     return {
         "filter": [
             {"left": "name", "operation": "nempty"},
-            {"left": "name", "operation": "match", "right": code},
+            {"left": "name", "operation": "equal", "right": str(code).upper()},
         ],
         "options": {"lang": "en"},
         "markets": ["forex"],
@@ -116,7 +116,9 @@ def currency(code: str):
     items = data.get("data")
 
     for item in items:
-        id = item.get("s")
+        _id = item.get("s")
+        if "FX_IDC" not in _id:  # extract the primary rate only
+            continue
         name, close, description = item.get("d")
 
         from_code = name[:3]
@@ -128,7 +130,7 @@ def currency(code: str):
 
         results.append(
             {
-                "id": id,
+                "id": _id,
                 "from": {
                     "name": from_name,
                     "code": from_code,
